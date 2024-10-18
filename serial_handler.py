@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import time
 import serial
 
 
@@ -13,7 +12,7 @@ class DeviceSerial:
                 bytesize=serial.EIGHTBITS,
                 timeout=1
         )
-    
+
     def validate(self, val: str, line: int=100) -> bool:
         count = 0
         while True:
@@ -31,5 +30,3 @@ class DeviceSerial:
 
 
 
-device = DeviceSerial()
-print(device.validate("waltr_A"))

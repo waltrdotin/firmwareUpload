@@ -1,26 +1,15 @@
+#!/usr/bin/env python
+
 import RPi.GPIO as GPIO
 import multiprocessing
 import time
-import os 
 import subprocess
+import os
 from led import Led
+from firmware import LocalStorage, get_bin_files
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
 pin = [23, 24, 27, 22]
-button = 0
-led_pin = 26
 
-the_led = Led(GPIO, led_pin)
-
-# the_led.blink(10)
-# the_led.on(10_000)
-
-GPIO.setup(led_pin, GPIO.OUT)
-for i in pin: 
-    GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-print("Wating ")
 def read_input() -> int:
     btn_down = -1
     while True:
@@ -34,34 +23,82 @@ def read_input() -> int:
         time.sleep(0.5)
     return btn_down
 
-
-def handle_button():
+def install_bin_file(file_path: str, the_led: Led) -> str:
     the_led.brightness = 1
+    based_path = os.getcwd()
+    p = multiprocessing.Process(target=the_led.blink, args=(10_000,))
+    p.start()
+    output = ""
+    command = [
+        "python3", "-m", "esptool", 
+        "-p", "/dev/ttyUSB0", 
+        "-b", "460800", 
+        "--before", "default_reset", 
+        "--after", "hard_reset", 
+        "--chip", "esp32", 
+        "write_flash", 
+        "--flash_mode", "dio", 
+        "--flash_size", "detect", 
+        "--flash_freq", "40m", 
+        "0x1000",  based_path + "/config/WALTR.bootloader.bin", 
+        "0x8000", based_path + "/config/WALTR.partitions.bin", 
+        "0x10000", file_path
+    ]
+    try:
+        result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+        output = result.stdout
+        print("Command executed successfully")
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with error: {e}")
+    p.terminate()
+    if "Hash of data verified." not in output:
+        the_led.brightness = 3
+        the_led.on(10)
+    return output
+
+
+def handle_button(storage: LocalStorage, the_led: Led):
+    button = 0
+    try:
+        get_bin_files(storage)
+    except:
+        pass
     button = read_input()
     active_pin = pin[button]
     button += 1
     print("BUTTON", "PIN")
-    print(button + 1, active_pin)
+    print(button, active_pin)
+    device_version = dict()
     if button == 1:
-        p = multiprocessing.Process(target=the_led.blink, args=(10_000,))
-        p.start()
-        # os.system("bash ~/waltr/firmwareUpload/waltr_A_cmd.sh")
-        result = subprocess.run(["bash", "./waltr_A_cmd.sh"], stdout=subprocess.PIPE, text=True)
-        output = result.stdout
-        print(output)
-        p.terminate()
-        if "Hash of data verified." not in output:
-            the_led.brightness = 3
-            the_led.on(10)
-
+        device_version = storage.get_version("waltr_A")
+    if button == 2:
+        device_version = storage.get_version("waltr_A")
+    if button == 3:
+        device_version = storage.get_version("waltr_A")
+    if button == 4:
+        device_version = storage.get_version("waltr_A")
+    if device_version != dict():
+        install_bin_file(device_version['path'], the_led)
     print("DONE")
     time.sleep(0.5)
-    handle_button()
+    handle_button(storage, the_led)
     return
 
 
+def main():
+    storage = LocalStorage()
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+    led_pin = 26
+    the_led = Led(GPIO, led_pin)
+    GPIO.setup(led_pin, GPIO.OUT)
+    for i in pin: 
+        GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    handle_button(storage, the_led)
 
-handle_button()
+
+if __name__=="__main__":
+    main()
 
 
 

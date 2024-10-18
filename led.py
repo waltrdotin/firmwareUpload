@@ -8,14 +8,14 @@ class Led:
         self.brightness = 1
 
     def ledDim(self):
-        for i in range(20):
+        for _ in range(20):
             self.io.output(self.pin, self.io.HIGH)
             time.sleep(.0001)
             self.io.output(self.pin, self.io.LOW)
             time.sleep(.0099)
 
     def ledBright(self):
-        for i in range(20):
+        for _ in range(20):
             self.io.output(self.pin, self.io.HIGH)
             time.sleep(.001)
             self.io.output(self.pin, self.io.LOW)
@@ -37,7 +37,7 @@ class Led:
         self.io.output(self.pin, self.io.LOW)
 
     def blink(self, n: int):
-        for i in range(n):
+        for _ in range(n):
             self.on(0.2)
             time.sleep(.2)
         self.io.output(self.pin, self.io.LOW)
