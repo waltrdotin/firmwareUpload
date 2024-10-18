@@ -28,5 +28,20 @@ class DeviceSerial:
                 return False
         return True
 
+    def run(self) -> bool:
+        while True:
+            x = self.serial.readline()
+            try:
+                data = x.decode("utf-8").replace("\n", "")
+            except:
+                print(x)
+                continue
+            if len(data) < 2:
+                continue
+            print(data)
+        return True
 
+
+device = DeviceSerial()
+device.run()
 

@@ -6,7 +6,7 @@ import time
 import subprocess
 import os
 from led import Led
-from firmware import LocalStorage, get_bin_files
+from firmware import LocalStorage, get_bin_files, get_current_path
 
 pin = [23, 24, 27, 22]
 
@@ -25,7 +25,7 @@ def read_input() -> int:
 
 def install_bin_file(file_path: str, the_led: Led) -> str:
     the_led.brightness = 1
-    based_path = os.getcwd()
+    based_path = get_current_path()
     p = multiprocessing.Process(target=the_led.blink, args=(10_000,))
     p.start()
     output = ""
@@ -59,6 +59,7 @@ def install_bin_file(file_path: str, the_led: Led) -> str:
 
 def handle_button(storage: LocalStorage, the_led: Led):
     button = 0
+    the_led.off()
     try:
         get_bin_files(storage)
     except:
@@ -72,11 +73,11 @@ def handle_button(storage: LocalStorage, the_led: Led):
     if button == 1:
         device_version = storage.get_version("waltr_A")
     if button == 2:
-        device_version = storage.get_version("waltr_A")
+        device_version = storage.get_version("waltr_B")
     if button == 3:
-        device_version = storage.get_version("waltr_A")
+        device_version = storage.get_version("waltr_C")
     if button == 4:
-        device_version = storage.get_version("waltr_A")
+        device_version = storage.get_version("waltr_V")
     if device_version != dict():
         install_bin_file(device_version['path'], the_led)
     print("DONE")
@@ -94,6 +95,8 @@ def main():
     GPIO.setup(led_pin, GPIO.OUT)
     for i in pin: 
         GPIO.setup(i, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    the_led.brightness = 2
+    the_led.blink(3)
     handle_button(storage, the_led)
 
 

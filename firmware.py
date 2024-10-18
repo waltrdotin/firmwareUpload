@@ -10,6 +10,10 @@ HEADERS = {
         "AUTHORIZATION": API_TOKEN
 }
 
+def get_current_path() -> str:
+    path = str(__file__)
+    return os.path.dirname(path) 
+
 def create_folder_if_not_exists(folder_path):
     os.makedirs(folder_path, exist_ok=True)
     print(f"Folder '{folder_path}' is ready!")
@@ -17,10 +21,11 @@ def create_folder_if_not_exists(folder_path):
 
 class LocalStorage:
     def __init__(self) -> None:
-        self.conn = sqlite3.connect('binfile.db')
+        current_path = get_current_path()
+        self.conn = sqlite3.connect(f'{current_path}/binfile.db')
         self.cursor = self.conn.cursor()
         self.table_name = 'ota'
-        self.file_path = os.getcwd() + "/binfile"
+        self.file_path = current_path + "/binfile"
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name}
                      (device_type text, version text, path text)''')
         self.conn.commit()

@@ -21,7 +21,7 @@ class Led:
             self.io.output(self.pin, self.io.LOW)
             time.sleep(.009)
 
-    def on(self,  durationSeconds: float):
+    def on(self, durationSeconds: float):
         time_count: float = 0
         while True:
             if self.brightness <= 1:
@@ -34,6 +34,10 @@ class Led:
             time_count += 0.2
             if time_count >= durationSeconds: 
                 break
+        self.io.output(self.pin, self.io.LOW)
+        return
+
+    def off(self):
         self.io.output(self.pin, self.io.LOW)
 
     def blink(self, n: int):
