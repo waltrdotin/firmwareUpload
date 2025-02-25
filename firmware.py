@@ -125,4 +125,3 @@ def get_bin_files(storage: LocalStorage):
         print(storage.get_all())
     return
 
-get_bin_files(LocalStorage())
