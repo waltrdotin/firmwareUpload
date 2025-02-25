@@ -3,12 +3,27 @@ import os
 import requests
 import sqlite3
 from dotenv import load_dotenv
+from hashlib import sha256
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
-HEADERS = {
-        "AUTHORIZATION": API_TOKEN
-}
+USER_ID = "c44fa77c-ea53-4507-90be-c805b4acd036"
+
+def get_headers() -> dict:
+    _datetime = datetime.now(tz=timezone.utc)
+    _datetime -= timedelta(minutes=_datetime.minute % 10, seconds=_datetime.second, microseconds=_datetime.microsecond)
+    token_string = f"{API_TOKEN} {int(_datetime.timestamp())}"
+    print(token_string)
+    token = sha256(token_string.encode("utf-8")).hexdigest()
+    return {
+            "AUTHORIZATION": f"Token {token}",
+            "User": USER_ID,
+            "Content-Type": "application/json",
+            "User-Agent": "WaltrSystemAgent/local/1.0"
+    }
+
+
 
 def get_current_path() -> str:
     path = str(__file__)
@@ -87,7 +102,7 @@ def download_file_to_folder(url: str, file_path: str) -> bool:
         return False
 
 def get_bin_files(storage: LocalStorage):
-    response = requests.get("https://api.waltr.in/v1/ota/latest", headers=HEADERS, timeout=5)
+    response = requests.get("https://api.waltr.in/v1/ota/latest", headers=get_headers(), timeout=5)
     if response.status_code != 200:
         print(response.text)
         return
@@ -110,3 +125,4 @@ def get_bin_files(storage: LocalStorage):
         print(storage.get_all())
     return
 
+get_bin_files(LocalStorage())
