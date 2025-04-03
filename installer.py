@@ -47,6 +47,7 @@ def install_bin_file(file_path: str, the_led: Led) -> str:
     try:
         result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
         output = result.stdout
+        print(output)
         print("Command executed successfully")
     except subprocess.CalledProcessError as e:
         print(f"Command failed with error: {e}")
