@@ -1,0 +1,15 @@
+[Unit]
+Description=Waltr App
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=chromium-browser --profile-directory=Default --new-window https://app.waltr.in
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
+
