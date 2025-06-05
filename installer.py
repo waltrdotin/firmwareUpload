@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-from gpiozero import Button, LED as GZ_LED
-import multiprocessing
+from gpiozero import Button
 import time
 import subprocess
 from led import Led
@@ -30,8 +29,7 @@ def read_input() -> int:
 def install_bin_file(file_path: str, the_led: Led) -> str:
     the_led.set_brightness_mode(1)
     based_path = get_current_path()
-    p = multiprocessing.Process(target=the_led.blink, args=(10_000,))
-    p.start()
+    the_led.blink(n=None, on_time=0.1, off_time=0.1)
     output = ""
     command = [
         "python3", "-m", "esptool", 

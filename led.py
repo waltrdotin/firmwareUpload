@@ -74,7 +74,7 @@ class Led:
         else:
             print("Invalid brightness mode. Use 0 (off), 1 (dim), 2 (bright), or 3 (full on).")
 
-    def blink(self, n: int, on_time: float = 0.2, off_time: float = 0.2):
+    def blink(self, n: int|None, on_time: float = 0.2, off_time: float = 0.2, background: bool=False):
         """
         Makes the LED blink n times.
 
@@ -83,8 +83,9 @@ class Led:
             on_time (float): The duration the LED stays on during each blink cycle.
             off_time (float): The duration the LED stays off during each blink cycle.
         """
-        self.led.blink(on_time=on_time, off_time=off_time, n=n, background=False)
-        self.led.off() # Ensure LED is off after blinking
+        self.led.blink(on_time=on_time, off_time=off_time, n=n, background=background)
+        if not background:
+            self.led.off()
 
 if __name__ == '__main__':
     try:

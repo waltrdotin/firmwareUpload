@@ -2,12 +2,11 @@
 Description=Waltr Firmware Installre
 
 [Service]
-User=pi
-Environment=/home/pi/waltr/firmwareUploda
+User=waltr
+WorkingDirectory=/home/waltr/firmwareUpload
 ExecStart=/usr/bin/python3 /home/pi/waltr/firmwareUpload/installer.py
 Restart=always
 Environment="PYTHONUNBUFFERED=1"
-
 
 
 [Install]
