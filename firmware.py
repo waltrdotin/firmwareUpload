@@ -3,12 +3,21 @@ import os
 import requests
 import sqlite3
 from dotenv import load_dotenv
+import uuid
 from hashlib import sha256
 from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
 USER_ID = os.getenv('USER_ID')
+
+
+def get_local_mac_uuid() -> int:
+    """
+    Gets a MAC address associated with the local machine using the uuid module.
+    """
+    mac_num = uuid.getnode()
+    return mac_num
 
 def auth_token():
     assert API_TOKEN is not None, "API_TOKEN is None"
@@ -25,7 +34,7 @@ def get_headers() -> dict:
             "Authorization": f"Token {auth_token()}",
             "User": USER_ID,
             "Content-Type": "application/json",
-            "User-Agent": "WaltrSystemAgent/pi/1.0"
+            "User-Agent": f"WaltrSystemAgent/pi/{get_local_mac_uuid()}"
     }
 
 
