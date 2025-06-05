@@ -8,19 +8,24 @@ from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
-USER_ID = "c44fa77c-ea53-4507-90be-c805b4acd036"
+USER_ID = os.getenv('USER_ID')
+
+def auth_token():
+    assert API_TOKEN is not None, "API_TOKEN is None"
+    now = datetime.now(tz=timezone.utc)
+    now_utc = now.replace(tzinfo=None)
+    now_utc -= timedelta(minutes=now_utc.minute, seconds=now_utc.second, microseconds=now_utc.microsecond)
+    raw_token = f'Token {API_TOKEN} {int(now_utc.timestamp())}'
+    encoded_token = sha256(raw_token.encode('utf-8')).hexdigest()
+    return encoded_token
 
 def get_headers() -> dict:
-    _datetime = datetime.now(tz=timezone.utc)
-    _datetime -= timedelta(minutes=_datetime.minute % 10, seconds=_datetime.second, microseconds=_datetime.microsecond)
-    token_string = f"{API_TOKEN} {int(_datetime.timestamp())}"
-    print(token_string)
-    token = sha256(token_string.encode("utf-8")).hexdigest()
+    assert USER_ID is not None, "USER_ID is None"
     return {
-            "AUTHORIZATION": f"Token {token}",
+            "AUTHORIZATION": f"Token {auth_token}",
             "User": USER_ID,
             "Content-Type": "application/json",
-            "User-Agent": "WaltrSystemAgent/local/1.0"
+            "User-Agent": "WaltrSystemAgent/pi/1.0"
     }
 
 
