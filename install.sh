@@ -24,9 +24,10 @@ set -e
 # --- Configuration ---
 REPO_URL="https://github.com/waltrdotin/firmwareUpload.git" 
 INSTALL_DIR="$HOME/firmwareUpload"
+VENV_DIR="${INSTALL_DIR}/venv"
 SERVICE_NAME="waltr_firmware_installer"
 SERVICE_FILE="${SERVICE_NAME}.service"
-PYTHON_SCRIPT="main.py"
+PYTHON_SCRIPT="installer.py"
 USER_TO_RUN_AS=$(whoami)
 
 # --- Functions ---
@@ -51,6 +52,16 @@ clone_or_update_repo() {
     fi
     echo "Repository cloned/updated successfully."
 }
+setup_virtual_environment() {
+    echo "--- Setting up Python virtual environment ---"
+    if [ ! -d "$VENV_DIR" ]; then
+        echo "Creating virtual environment at '$VENV_DIR'..."
+        python3 -m venv "$VENV_DIR"
+        echo "Virtual environment created."
+    else
+        echo "Virtual environment already exists at '$VENV_DIR'."
+    fi
+}
 
 install_python_dependencies() {
     echo "--- Installing Python dependencies ---"
@@ -59,7 +70,7 @@ install_python_dependencies() {
         echo "gpiozero" > requirements.txt
         echo "esptool" >> requirements.txt
     fi
-    pip3 install -r requirements.txt
+   "$VENV_DIR/bin/python" -m pip3 install -r requirements.txt
     echo "Python dependencies installed."
 }
 
@@ -76,7 +87,7 @@ Description=WALTR Firmware Installer Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 ${INSTALL_DIR}/${PYTHON_SCRIPT}
+ExecStart=${VENV_DIR}/bin/python ${INSTALL_DIR}/${PYTHON_SCRIPT}
 WorkingDirectory=${INSTALL_DIR}
 Restart=always
 User=${USER_TO_RUN_AS}
