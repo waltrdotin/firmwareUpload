@@ -57,8 +57,7 @@ def install_bin_file(file_path: str, the_led: Led) -> str:
         # Capture both stdout and stderr for error
         output = e.stdout + e.stderr
     finally:
-        p.terminate()
-        p.join()
+        the_led.off()
     if "Hash of data verified." not in output:
         the_led.set_brightness_mode(3)
         the_led.on(10)

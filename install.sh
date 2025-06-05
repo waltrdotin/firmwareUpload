@@ -38,16 +38,6 @@ install_system_dependencies() {
     sudo apt install -y git python3 python3-pip
     echo "System dependencies (git, python3, pip) installed."
 }
-setup_pigpiod_service() {
-    echo "--- Setting up pigpiod service ---"
-    sudo systemctl enable pigpiod
-    sudo systemctl start pigpiod
-    if sudo systemctl is-active --quiet pigpiod; then
-        echo "pigpiod service is active (running)."
-    else
-        echo "WARNING: pigpiod service failed to start. Please check 'sudo systemctl status pigpiod'."
-    fi
-}
 
 clone_or_update_repo() {
     echo "--- Cloning or updating Git repository ---"
@@ -81,6 +71,7 @@ install_python_dependencies() {
         echo "esptool" >> requirements.txt
         echo "requests" >> requirements.txt
         echo "dotenv" >> requirements.txt
+        echo "lgpio" >> requirements.txt
     fi
    "$VENV_DIR/bin/python" -m pip3 install -r requirements.txt
     echo "Python dependencies installed."
@@ -134,8 +125,6 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 install_system_dependencies
-
-setup_pigpiod_service
 
 clone_or_update_repo
 
