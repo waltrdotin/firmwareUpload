@@ -29,6 +29,7 @@ SERVICE_NAME="waltr_firmware_installer"
 SERVICE_FILE="${SERVICE_NAME}.service"
 PYTHON_SCRIPT="installer.py"
 USER_TO_RUN_AS=$(whoami)
+VENV_CONFIG_FILE="${INSTALL_DIR}/.venv_path"
 
 # --- Functions ---
 
@@ -61,6 +62,8 @@ setup_virtual_environment() {
     else
         echo "Virtual environment already exists at '$VENV_DIR'."
     fi
+    echo "$VENV_DIR/bin/python" > "$VENV_CONFIG_FILE"
+    echo "Virtual environment Python path saved to '$VENV_CONFIG_FILE'."
 }
 
 install_python_dependencies() {
@@ -73,7 +76,7 @@ install_python_dependencies() {
         echo "dotenv" >> requirements.txt
         echo "lgpio" >> requirements.txt
     fi
-   "$VENV_DIR/bin/python" -m pip3 install -r requirements.txt
+   "$VENV_DIR/bin/python" -m pip install -r requirements.txt
     echo "Python dependencies installed."
 }
 

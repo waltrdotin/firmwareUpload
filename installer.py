@@ -5,6 +5,27 @@ import time
 import subprocess
 from led import Led
 from firmware import LocalStorage, get_bin_files, get_current_path
+from pathlib import Path
+
+
+
+INSTALL_DIR = Path(__file__).resolve().parent
+VENV_CONFIG_FILE = INSTALL_DIR / ".venv_path"
+
+VENV_PYTHON = ""
+
+try:
+    if VENV_CONFIG_FILE.exists():
+        VENV_PYTHON = VENV_CONFIG_FILE.read_text().strip()
+        if not Path(VENV_PYTHON).exists():
+            print(f"WARNING: Configured VENV_PYTHON path '{VENV_PYTHON}' does not exist. Using 'python3'.")
+            VENV_PYTHON = "python3"
+    else:
+        print(f"WARNING: VENV config file '{VENV_CONFIG_FILE}' not found. Using 'python3'.")
+        VENV_PYTHON = "python3"
+except Exception as e:
+    print(f"ERROR: Could not read VENV config file: {e}. Using 'python3'.")
+    VENV_PYTHON = "python3"
 
 BUTTON_PINS = [23, 24, 27, 22]
 
@@ -32,9 +53,9 @@ def install_bin_file(file_path: str, the_led: Led) -> str:
     the_led.blink(n=None, on_time=0.1, off_time=0.1, background=True)
     output = ""
     command = [
-        "python3", "-m", "esptool", 
+        VENV_PYTHON, "-m", "esptool", 
         "-p", "/dev/ttyUSB0", 
-        "-b", "460800", 
+        "-b", "921600", 
         "--before", "default_reset", 
         "--after", "hard_reset", 
         "--chip", "esp32", 
