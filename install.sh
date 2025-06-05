@@ -38,6 +38,16 @@ install_system_dependencies() {
     sudo apt install -y git python3 python3-pip
     echo "System dependencies (git, python3, pip) installed."
 }
+setup_pigpiod_service() {
+    echo "--- Setting up pigpiod service ---"
+    sudo systemctl enable pigpiod
+    sudo systemctl start pigpiod
+    if sudo systemctl is-active --quiet pigpiod; then
+        echo "pigpiod service is active (running)."
+    else
+        echo "WARNING: pigpiod service failed to start. Please check 'sudo systemctl status pigpiod'."
+    fi
+}
 
 clone_or_update_repo() {
     echo "--- Cloning or updating Git repository ---"
@@ -69,6 +79,8 @@ install_python_dependencies() {
         echo "requirements.txt not found. Generating a basic one."
         echo "gpiozero" > requirements.txt
         echo "esptool" >> requirements.txt
+        echo "requests" >> requirements.txt
+        echo "dotenv" >> requirements.txt
     fi
    "$VENV_DIR/bin/python" -m pip3 install -r requirements.txt
     echo "Python dependencies installed."
@@ -79,8 +91,6 @@ create_and_install_systemd_service() {
     SERVICE_FILE_PATH="/etc/systemd/system/${SERVICE_FILE}"
 
     # Create the service file content using a 'here-document'
-    # The 'cat <<EOF | sudo tee "$SERVICE_FILE_PATH"' allows multi-line string
-    # to be written to a file with sudo privileges.
     cat <<EOF | sudo tee "$SERVICE_FILE_PATH"
 [Unit]
 Description=WALTR Firmware Installer Service
@@ -125,7 +135,11 @@ fi
 
 install_system_dependencies
 
+setup_pigpiod_service
+
 clone_or_update_repo
+
+setup_virtual_environment
 
 install_python_dependencies
 
