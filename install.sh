@@ -99,7 +99,7 @@ Group=${USER_TO_RUN_AS}
 Environment=PYTHONUNBUFFERED=1
 
 [Install]
-WantedBy=multi-user.target # Start when the system enters multi-user runlevel
+WantedBy=multi-user.target
 EOF
 
     echo "Systemd service file created at '$SERVICE_FILE_PATH'"
