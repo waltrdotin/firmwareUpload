@@ -29,7 +29,7 @@ def read_input() -> int:
 def install_bin_file(file_path: str, the_led: Led) -> str:
     the_led.set_brightness_mode(1)
     based_path = get_current_path()
-    the_led.blink(n=None, on_time=0.1, off_time=0.1)
+    the_led.blink(n=None, on_time=0.1, off_time=0.1, background=True)
     output = ""
     command = [
         "python3", "-m", "esptool", 
