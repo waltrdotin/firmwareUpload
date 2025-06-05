@@ -15,14 +15,14 @@ def auth_token():
     now = datetime.now(tz=timezone.utc)
     now_utc = now.replace(tzinfo=None)
     now_utc -= timedelta(minutes=now_utc.minute, seconds=now_utc.second, microseconds=now_utc.microsecond)
-    raw_token = f'Token {API_TOKEN} {int(now_utc.timestamp())}'
+    raw_token = f'{API_TOKEN} {int(now_utc.timestamp())}'
     encoded_token = sha256(raw_token.encode('utf-8')).hexdigest()
     return encoded_token
 
 def get_headers() -> dict:
     assert USER_ID is not None, "USER_ID is None"
     return {
-            "AUTHORIZATION": f"Token {auth_token}",
+            "Authorization": f"Token {auth_token()}",
             "User": USER_ID,
             "Content-Type": "application/json",
             "User-Agent": "WaltrSystemAgent/pi/1.0"
@@ -129,4 +129,5 @@ def get_bin_files(storage: LocalStorage):
                 storage.insert(k, v['version'], file_path)
         print(storage.get_all())
     return
+
 
