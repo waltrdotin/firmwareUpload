@@ -67,7 +67,7 @@ class LocalStorage:
     def get_version(self, _type: str) -> dict:
         keys = ["button", "version", "path", "is_idf"]
         columns = ", ".join(keys)
-        statement = f"""SELECT {columns} FROM {self.table_name} WHERE device_type = ?"""
+        statement = f"""SELECT {columns} FROM {self.table_name} WHERE button = ?"""
         self.cursor.execute(statement, (_type,))
         output = self.cursor.fetchone()
         response = dict()

@@ -1,5 +1,6 @@
 import time
-from gpiozero import PWMLED, LED as GZ_LED # Import specific classes from gpiozero
+from gpiozero import PWMLED
+import sys
 
 class Led:
     """
@@ -113,9 +114,10 @@ if __name__ == '__main__':
         print("Turning off LED.")
         my_led.off()
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
         if 'my_led' in locals() and my_led.led.is_lit: # Check if led object exists and is lit
             my_led.led.off() # Ensure it's off before closing
         print("GPIO cleanup complete.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)

@@ -22,8 +22,10 @@
 set -e
 
 # --- Configuration ---
+user_home=$(eval echo "~$SUDO_USER")
+echo "$user_home"
 REPO_URL="https://github.com/waltrdotin/firmwareUpload.git" 
-INSTALL_DIR="$HOME/firmwareUpload"
+INSTALL_DIR="$user_home/firmwareUpload"
 VENV_DIR="${INSTALL_DIR}/venv"
 SERVICE_NAME="waltr_firmware_installer"
 SERVICE_FILE="${SERVICE_NAME}.service"
